@@ -79,6 +79,46 @@ For the Case study, I used PostgreSQL.
     ```
     - Customer A's first orders were Sushi and Curry, Customer B's was Curry, and Customer C's was Ramen.
 
+4. **Most Purchased Item and Its Frequency:**
+    ```sql
+    SELECT
+        DISTINCT m.product_name AS p_name,
+        COUNT(s.order_date)
+    FROM dannys_diner.sales AS s
+    INNER JOIN dannys_diner.menu AS m
+    USING (product_id)
+    GROUP BY 1 
+    ORDER BY 2 DESC
+    LIMIT 1;
+    ```
+    - Ramen was the most frequently purchased item, with 8 purchases.
+
+5. **Most Popular Item for Each Customer:**
+    ```sql
+    WITH cte AS (
+        SELECT
+            s.customer_id AS cust,
+            m.product_name AS p_name,
+            COUNT(s.order_date) AS c
+        FROM dannys_diner.sales AS s
+        INNER JOIN dannys_diner.menu AS m
+        USING (product_id)
+        GROUP BY 1,2
+    ),
+    q1 AS (
+        SELECT
+            cust,
+            p_name,
+            RANK() OVER (PARTITION BY cust ORDER BY c DESC) AS m
+        FROM cte
+    )
+
+    SELECT cust, p_name
+    FROM q1 
+    WHERE m = 1;
+    ```
+    - Customer A's most popular item was Ramen (3 times), Customer B's were Ramen, Sushi, and Curry (2 times each), and Customer C's was Ramen (3 times).
+
 ... (continue for other questions and answers)
 
 ## Insights
