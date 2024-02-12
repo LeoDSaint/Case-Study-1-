@@ -135,9 +135,7 @@ GROUP BY 1
 ORDER BY 1;
 
 
--- 10. In the first week after a customer joins the program
--- (including their join date) they earn 2x points on all items, not just sushi - 
---how many points do customer A and B have at the end of January?
+-
 
 
 --9 If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
@@ -167,22 +165,31 @@ ORDER BY 1 ;
 
 
 
-SELECT
-    s.customer_id,
-    SUM(CASE WHEN s.order_date >= m.join_date AND s.order_date < m.join_date + INTERVAL '7 days' THEN 2*mm.price ELSE 0 END) AS total_points
-FROM
-    sales AS s
-LEFT JOIN 
-	members AS m
-ON s.customer_id = m.customer_id
-LEFT JOIN 
-	menu AS mm
-ON s.product_id = mm.product_id
-WHERE
-    s.customer_id IN ('A', 'B') AND
-    EXTRACT(MONTH FROM s.order_date) = 1  -- January
-GROUP BY
-    s.customer_id;
+WITH dates_cte AS (
+  SELECT 
+    customer_id, 
+    join_date, 
+    join_date + 6 AS valid_date, 
+    DATE_TRUNC(
+      'month', '2021-01-31'::DATE)
+      + interval '1 month' 
+      - interval '1 day' AS last_date
+  FROM members
+)
+
+SELECT 
+  sales.customer_id, 
+  SUM(CASE
+    WHEN menu.product_name = 'sushi' THEN 2 * 10 * menu.price
+    WHEN sales.order_date BETWEEN dates.join_date AND dates.valid_date THEN 2 * 10 * menu.price
+    ELSE 10 * menu.price END) AS points
+FROM sales
+JOIN dates_cte AS dates
+  ON sales.customer_id = dates.customer_id
+  AND sales.order_date <= dates.last_date
+JOIN menu
+  ON sales.product_id = menu.product_id
+GROUP BY sales.customer_id;
 
 
 
@@ -210,3 +217,23 @@ ON
 ORDER BY
 		1,2;
 	
+
+
+--Bonus Question
+SELECT 
+  sales.customer_id, 
+  sales.order_date,  
+  menu.product_name, 
+  menu.price,
+  CASE
+    WHEN members.join_date > sales.order_date THEN 'N'
+    WHEN members.join_date <= sales.order_date THEN 'Y'
+    ELSE 'N' END AS member_status
+FROM sales
+LEFT JOIN members
+  ON sales.customer_id = members.customer_id
+JOIN menu
+  ON sales.product_id = menu.product_id
+ORDER BY members.customer_id, sales.order_date;
+
+
