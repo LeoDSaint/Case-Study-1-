@@ -7,6 +7,8 @@
 **Duration:** 5 min read
 
 ---
+![image](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*7vbHeSc5CN99Ud7n9vJu6Q.png)
+
 
 Japanese food, sushi, curry, and ramen are the main specialties at the recently launched eatery Danny’s Diner. Danny makes the decision to launch his business in the first few months of 2021 to indulge his passion for Japanese cuisine.
 
@@ -48,6 +50,8 @@ For the Case study, I used PostgreSQL.
     ```
     - Customer A spent $76, Customer B spent $74, and Customer C spent $36.
 
+![image](https://miro.medium.com/v2/resize:fit:628/format:webp/1*-Uz8_3JYCu04RQSsRqKoww.png)
+
 2. **Number of Days Each Customer Visited:**
     ```sql
     SELECT
@@ -58,6 +62,8 @@ For the Case study, I used PostgreSQL.
     ORDER BY 1 ASC;
     ```
     - Customer A visited 4 times, B visited 6 times, and C visited 2 times.
+
+![image](https://miro.medium.com/v2/resize:fit:640/format:webp/1*lvV00C82CvUcs68UWYuwwQ.png)
 
 3. **First Item Purchased by Each Customer:**
     ```sql
@@ -77,7 +83,17 @@ For the Case study, I used PostgreSQL.
     FROM cte
     WHERE row_n = 1;
     ```
-    - Customer A's first orders were Sushi and Curry, Customer B's was Curry, and Customer C's was Ramen.
+    -Answer:
+
+
+*Sushi and curry were Customer A’s first orders.*
+
+*Curry was Customer B’s first order.*
+
+
+*Ramen was Customer C’s first order.*
+
+![image](https://miro.medium.com/v2/resize:fit:640/format:webp/1*qnURiHegoafA4HHqNC78Og.png)
 
 4. **Most Purchased Item and Its Frequency:**
     ```sql
@@ -92,6 +108,8 @@ For the Case study, I used PostgreSQL.
     LIMIT 1;
     ```
     - Ramen was the most frequently purchased item, with 8 purchases.
+
+![image](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*mNlkNjW6nCFsrhvt2NxZsw.png)
 
 5. **Most Popular Item for Each Customer:**
     ```sql
@@ -117,7 +135,17 @@ For the Case study, I used PostgreSQL.
     FROM q1 
     WHERE m = 1;
     ```
-    - Customer A's most popular item was Ramen (3 times), Customer B's were Ramen, Sushi, and Curry (2 times each), and Customer C's was Ramen (3 times).
+    -Answer
+
+*Ramen was Customer ‘A’s’ most popular item, which he or she purchased three times.*
+
+
+*The most popular items for Customers ‘B’ were Ramen ,Sushi,Curry which the individual bought twice each.* 
+
+
+*Customers ‘C’ bought Ramen three times.*
+
+![image](https://miro.medium.com/v2/resize:fit:720/format:webp/1*YikRVRGtg6okX4UWCGoLMA.png)
 
 6. **Which item was purchased first by the customer after they became a member?**
  ```sql
@@ -147,7 +175,14 @@ ORDER BY 1 ;
 
 Answer:
 
-- Curry was Customer ‘A’s’ first purchase after signing up for the membership. Customer ‘B’ first purchase after joining was sushi. However, Customer ‘C’ lacks join_date information, which means Customer ‘C’ did not sign up for membership.
+- Customer A’s first order as a member is ramen.
+
+  
+- Customer B’s first order as a member is sushi. 
+
+*However, Customer ‘C’ lacks join_date information, which means Customer ‘C’ did not sign up for membership.*
+
+![image](https://miro.medium.com/v2/resize:fit:750/format:webp/1*KSF8cOQTsk8zIyljTYigQQ.png)
 
 7 **Which item was purchased just before the customer became a member?**
  ```sql
@@ -174,7 +209,9 @@ Answer:
 
 - While,
 
-- Customer A purchased curry&sushi just before they became a member
+- Customer A purchased curry&sushi just before they became a member.
+
+![image](https://miro.medium.com/v2/resize:fit:828/format:webp/1*7XJ8psUcIcqx43ATKGvECQ.png)
 
 8. **What is the total items and amount spent for each member before they became a member?**
 
@@ -197,8 +234,11 @@ ORDER BY 1;
 - Answer :
 
 - Customer A made 2 purchases worth $25 before signing up for the membership.
+
+
 - Customer B, on the other hand, made a total of three purchases for $40.
 
+![image](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*zRntVrDQ7SCdYv-oDrmmhQ.png)
 9. **If each $1 spent equates to 10 points and sushi has a 2x points multiplier — how many points would each customer have?**
 
  ```sql
@@ -219,6 +259,9 @@ ORDER BY 1 ;
 - Customer A has 860 points
 - Customer B has 940 points
 - Customer C has 360 points
+
+![image](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*9khnfFBq2-N5J2uqXSDGVg.png)
+
 10. **In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi — how many points do customer A and B have at the end of January?**
 
 - Assumptions:
@@ -268,6 +311,32 @@ GROUP BY sales.customer_id;
 
 - Customer A has 1,370 points.
 - Customer B has 820 points.
+
+![image](https://miro.medium.com/v2/resize:fit:640/format:webp/0*jClElTj5YmpfoEcq.png)
+
+
+**Bonus Questions**
+*Join All The Things*
+Recreate the table with: customer_id, order_date, product_name, price, member (Y/N)
+![image](https://miro.medium.com/v2/resize:fit:828/format:webp/1*unCTTXk18NSz422vU6w0rg.png)
+ ```sql
+SELECT 
+  sales.customer_id, 
+  sales.order_date,  
+  menu.product_name, 
+  menu.price,
+  CASE
+    WHEN members.join_date > sales.order_date THEN 'N'
+    WHEN members.join_date <= sales.order_date THEN 'Y'
+    ELSE 'N' END AS member_status
+FROM sales
+LEFT JOIN members
+  ON sales.customer_id = members.customer_id
+JOIN menu
+  ON sales.product_id = menu.product_id
+ORDER BY members.customer_id, sales.order_date
+  ```
+![image](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*v3nWCStOxxYNMYTcjxdT0g.png)
 
 ## Insights
 
