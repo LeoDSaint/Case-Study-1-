@@ -2,8 +2,6 @@
 
 **Author:** Adewale Ashogbon
 
-**Date:** May 17, 2023
-
 **Duration:** 5 min read
 
 ---
